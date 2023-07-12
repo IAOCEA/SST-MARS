@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -q mpi_1
+#PBS -l select=1:ncpus=28:mem=112g
+#PBS -l walltime=48:00:00
+#PBS -e /home1/datawork/jmdeloui/heal_cnn/dohwst64.err
+#PSB -n TESTFOSCAT
+
+source /home1/datahome/jmdeloui/starttens.sh
+cd /home1/datahome/jmdeloui/DATAWORK/TAOS
+module load impi/5.1.3.258
+
+conda activate base
+
+export OMP_NUM_THREADS=28
+
+mpirun -np 8 python syntheModel.py -n=128 -k -c -s=300 >& TAOS.out
+exit
