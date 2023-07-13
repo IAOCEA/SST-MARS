@@ -186,9 +186,9 @@ def main():
     #=================================================================================
     # Get data
     #=================================================================================
-    im=np.load('/home1/scratch/jmdeloui/TAOS/mars3dT.npy')[n1:n2,39]
-    pim=np.load('/home1/scratch/jmdeloui/TAOS/mars3dP.npy')[n1:n2]
-    tim=np.load('/home1/scratch/jmdeloui/TAOS/mars3dSST.npy')[n1:n2]
+    im=np.load('data/mars3dT.npy')[n1:n2,39]
+    pim=np.load('data/mars3dP.npy')[n1:n2]
+    tim=np.load('data/mars3dSST.npy')[n1:n2]
     
     if nside<im.shape[1]:
         im=im[:,im.shape[1]//2-nside//2:im.shape[1]//2+nside//2,
@@ -320,18 +320,18 @@ def main():
     #=================================================================================
     
     
-    np.save('in2dM_%s_map_%d.npy'%(outname,nside),im)
-    np.save('sst2dM_%s_map_%d.npy'%(outname,nside),tim)
-    np.save('st2dM_%s_map_%d.npy'%(outname,nside),mask[0])
-    np.save('stm2dM_%s_map_%d.npy'%(outname,nside),masktim[0])
-    np.save('out2dM_%s_map_%d.npy'%(outname,nside),omap)
-    np.save('out2dM_%s_log_%d.npy'%(outname,nside),sy.get_history())
+    np.save('./data/in2dM_%s_map_%d.npy'%(outname,nside),im)
+    np.save('./data/sst2dM_%s_map_%d.npy'%(outname,nside),tim)
+    np.save('./data/st2dM_%s_map_%d.npy'%(outname,nside),mask[0])
+    np.save('./data/stm2dM_%s_map_%d.npy'%(outname,nside),masktim[0])
+    np.save('./data/out2dM_%s_map_%d.npy'%(outname,nside),omap)
+    np.save('./data/out2dM_%s_log_%d.npy'%(outname,nside),sy.get_history())
 
     for i in range(imap.shape[0]):
         start=scat_op.eval(imap[i])
         out =scat_op.eval(omap[i])
-        start.save('st2dM%d_%s_%d'%(i,outname,nside))
-        out.save('out2dM%d_%s_%d'%(i,outname,nside))
+        start.save('./data/st2dM%d_%s_%d'%(i,outname,nside))
+        out.save('./data/out2dM%d_%s_%d'%(i,outname,nside))
     
     print('Computation Done')
     sys.stdout.flush()
