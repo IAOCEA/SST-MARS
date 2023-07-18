@@ -27,7 +27,7 @@ def main():
 
     cov=False
     nside=-1
-    outname='demo'
+    outname='demo_map'
     cmap='jet'
     docart=False
     vmin=-3
@@ -64,7 +64,9 @@ def main():
         import foscat.scat as sc
 
 
-    log= np.load('out2d_%s_log_%d.npy'%(outname,nside))
+    outname='demo_map'
+    log= np.load('./data/out2dM_%s_log_%d.npy'%(outname,nside))
+#    log= np.load('./data/out2dM_demo_log_128.npy') #name,nside))
     plt.figure(figsize=(6,6))
     plt.plot(np.arange(log.shape[0])+1,log,color='black')
     plt.xscale('log')
@@ -72,13 +74,13 @@ def main():
     plt.ylabel('Loss')
     plt.xlabel('Number of iteration')
     
-    sst = np.load('sst2dM_%s_map_%d.npy'%(outname,nside))
-    im = np.load('in2dM_%s_map_%d.npy'%(outname,nside))
-    sm = np.load('st2dM_%s_map_%d.npy'%(outname,nside))
-    om = np.load('out2dM_%s_map_%d.npy'%(outname,nside))
+    sst = np.load('./data/sst2dM_%s_map_%d.npy'%(outname,nside))
+    im = np.load('./data/in2dM_%s_map_%d.npy'%(outname,nside))
+    sm = np.load('./data/st2dM_%s_map_%d.npy'%(outname,nside))
+    om = np.load('./data/out2dM_%s_map_%d.npy'%(outname,nside))
 
-    start = sc.read('st2dM%d_%s_%d'%(0,outname,nside))
-    out   = sc.read('out2dM%d_%s_%d'%(0,outname,nside))
+    start = sc.read('./data/st2dM%d_%s_%d'%(0,outname,nside))
+    out   = sc.read('./data/out2dM%d_%s_%d'%(0,outname,nside))
     start.plot(name='Input',color='orange')
     out.plot(name='Output',color='red',hold=False)
     
