@@ -15,7 +15,7 @@ def usage():
     print('--vmin|-i    (optional): specify the minimum value')
     print('--vmax|-a    (optional): specify the maximum value')
     exit(0)
-    
+
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "n:co:m:gi:a:", ["nside", "cov","out","map","geo","vmin","vmax"])
@@ -27,12 +27,12 @@ def main():
 
     cov=False
     nside=-1
-    outname='demo_map'
+    outname='demo'
     cmap='jet'
     docart=False
     vmin=-3
     vmax=3
-    
+
     for o, a in opts:
         if o in ("-c","--cov"):
             cov = True
