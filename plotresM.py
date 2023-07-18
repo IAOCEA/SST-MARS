@@ -64,7 +64,7 @@ def main():
         import foscat.scat as sc
 
 
-    outname='demo_map'
+    outname='demo'
     log= np.load('./data/out2dM_%s_log_%d.npy'%(outname,nside))
 #    log= np.load('./data/out2dM_demo_log_128.npy') #name,nside))
     plt.figure(figsize=(6,6))
