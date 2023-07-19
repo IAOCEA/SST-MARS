@@ -15,7 +15,7 @@ def usage():
     print('--vmin|-i    (optional): specify the minimum value')
     print('--vmax|-a    (optional): specify the maximum value')
     exit(0)
-    
+
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "n:co:m:gi:a:", ["nside", "cov","out","map","geo","vmin","vmax"])
@@ -32,7 +32,7 @@ def main():
     docart=False
     vmin=-3
     vmax=3
-    
+
     for o, a in opts:
         if o in ("-c","--cov"):
             cov = True
@@ -63,11 +63,11 @@ def main():
     else:
         import foscat.scat as sc
 
-    refX  = sc.read('in2d_%s_%d'%(outname,nside))
-    start = sc.read('st2d_%s_%d'%(outname,nside))
-    out   = sc.read('out2d_%s_%d'%(outname,nside))
+    refX  = sc.read('./data/in2d_%s_%d'%(outname,nside))
+    start = sc.read('./data/st2d_%s_%d'%(outname,nside))
+    out   = sc.read('./data/out2d_%s_%d'%(outname,nside))
 
-    log= np.load('out2d_%s_log_%d.npy'%(outname,nside))
+    log= np.load('./data/out2d_%s_log_%d.npy'%(outname,nside))
     plt.figure(figsize=(6,6))
     plt.plot(np.arange(log.shape[0])+1,log,color='black')
     plt.xscale('log')
@@ -80,11 +80,11 @@ def main():
     out.plot(name='Output',color='red',hold=False)
     #(refX-out).plot(name='Diff',color='purple',hold=False)
 
-    sst = np.load('sst2d_%s_map_%d.npy'%(outname,nside))
-    im = np.load('in2d_%s_map_%d.npy'%(outname,nside))
-    sm = np.load('st2d_%s_map_%d.npy'%(outname,nside))
-    tsm= np.load('stm2d_%s_map_%d.npy'%(outname,nside))
-    om = np.load('out2d_%s_map_%d.npy'%(outname,nside))
+    sst = np.load('./data/sst2d_%s_map_%d.npy'%(outname,nside))
+    im = np.load('./data/in2d_%s_map_%d.npy'%(outname,nside))
+    sm = np.load('./data/st2d_%s_map_%d.npy'%(outname,nside))
+    tsm= np.load('./data/stm2d_%s_map_%d.npy'%(outname,nside))
+    om = np.load('./data/out2d_%s_map_%d.npy'%(outname,nside))
 
     n=im.shape[0]
     plt.figure(figsize=(10,6))

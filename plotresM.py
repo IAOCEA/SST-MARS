@@ -64,6 +64,7 @@ def main():
         import foscat.scat as sc
 
     log= np.load('out2dM_%s_log_%d.npy'%(outname,nside))
+
     plt.figure(figsize=(6,6))
     plt.plot(np.arange(log.shape[0])+1,log,color='black')
     plt.xscale('log')
@@ -71,15 +72,16 @@ def main():
     plt.ylabel('Loss')
     plt.xlabel('Number of iteration')
     
-    sst = np.load('sst2dM_%s_map_%d.npy'%(outname,nside))
-    im = np.load('in2dM_%s_map_%d.npy'%(outname,nside))
-    sm = np.load('st2dM_%s_map_%d.npy'%(outname,nside))
-    om = np.load('out2dM_%s_map_%d.npy'%(outname,nside))
+    sst = np.load('./data/sst2dM_%s_map_%d.npy'%(outname,nside))
+    im = np.load('./data/in2dM_%s_map_%d.npy'%(outname,nside))
+    sm = np.load('./data/st2dM_%s_map_%d.npy'%(outname,nside))
+    om = np.load('./data/out2dM_%s_map_%d.npy'%(outname,nside))
 
     i1=im.shape[0]//2
 
     start = sc.read('st2dM%d_%s_%d'%(i1,outname,nside))
     out   = sc.read('out2dM%d_%s_%d'%(i1,outname,nside))
+
     start.plot(name='Input',color='orange')
     out.plot(name='Output',color='red',hold=False)
     

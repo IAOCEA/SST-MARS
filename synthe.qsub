@@ -14,5 +14,5 @@ conda activate base
 
 export OMP_NUM_THREADS=4
 
-mpirun -np 7 python syntheModel.py -n=128 -k -c -s=300 >& TAOS.out
+mpirun -np 7 python syntheModel.py -n=128 -k -c -s=300 -d=/home1/scratch/jmdeloui/TAOS >& logs/TAOS.out
 exit
