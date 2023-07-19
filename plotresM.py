@@ -63,7 +63,7 @@ def main():
     else:
         import foscat.scat as sc
 
-    log= np.load('out2dM_%s_log_%d.npy'%(outname,nside))
+    log= np.load('logs/out2dM_%s_log_%d.npy'%(outname,nside))
 
     plt.figure(figsize=(6,6))
     plt.plot(np.arange(log.shape[0])+1,log,color='black')
