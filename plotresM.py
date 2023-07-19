@@ -63,7 +63,7 @@ def main():
     else:
         import foscat.scat as sc
 
-    log= np.load('logs/out2dM_%s_log_%d.npy'%(outname,nside))
+    log= np.load('data/out2dM_%s_log_%d.npy'%(outname,nside))
 
     plt.figure(figsize=(6,6))
     plt.plot(np.arange(log.shape[0])+1,log,color='black')
@@ -79,8 +79,8 @@ def main():
 
     i1=im.shape[0]//2
 
-    start = sc.read('st2dM%d_%s_%d'%(i1,outname,nside))
-    out   = sc.read('out2dM%d_%s_%d'%(i1,outname,nside))
+    start = sc.read('./data/st2dM%d_%s_%d'%(i1,outname,nside))
+    out   = sc.read('./data/out2dM%d_%s_%d'%(i1,outname,nside))
 
     start.plot(name='Input',color='orange')
     out.plot(name='Output',color='red',hold=False)
@@ -97,7 +97,7 @@ def main():
     plt.subplot(2,3,5)
     plt.imshow((om[i1+1])/sm[0],vmin=12.0,vmax=18.0,cmap='jet',origin='lower')
     plt.subplot(2,3,6)
-    plt.imshow((sst[i1])/sm[0],vmin=12.0,vmax=18.0,cmap='jet',origin='lower')
+    plt.imshow((sst[i1+1])/sm[0],vmin=12.0,vmax=18.0,cmap='jet',origin='lower')
     
     plt.show()
     exit(0)
