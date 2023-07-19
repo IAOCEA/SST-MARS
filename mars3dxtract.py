@@ -7,8 +7,8 @@ import sys
 
 tag='/home/datawork-lops-iaocea/data/fish-intel/tag/nc/A18832.nc'
 
-t0=datetime(2022,6,17,0,0,0)
-t1=datetime(2022,6,17,11,1,0)
+t0=datetime(2022,6,16,0,0,0)
+t1=datetime(2022,6,16,11,1,0)
 
 nside=256
 
@@ -33,7 +33,7 @@ print((t1+timedelta(seconds=60*int(tim[0]))).ctime(), \
 #read corresponding marc data
 path='/dataref/ref3/public/modeles_marc/f1_e2500/best_estimate/'
 
-nh=256 #int((tim[1]-tim[0])//60)+1
+nh=256 #int((tim[1]-tim[0])//60)+24
 
 ii=0
 dt=t1+timedelta(hours=ii)
@@ -94,10 +94,12 @@ y1=nside//2+(y1-yc)
 pathsst='/home/ref-cersat-public/sea-surface-temperature/odyssea/l3s/atl/nrt/data/v3.0/'
 for ii in range(nh):
     dt=t1+timedelta(hours=ii)
+    dtsst=t1+timedelta(hours=ii+12)
     daynum=(dt-datetime(dt.year,1,1,0,0)).days+1
+    daynumsst=(dtsst-datetime(dtsst.year,1,1,0,0)).days+1
     deltas=(dt-t0).total_seconds()
 
-    name=pathsst+'%d/%d/%d%02d%02d000000-IFR-L3S_GHRSST-SSTfnd-ODYSSEA-ATL_002-v02.1-fv01.0.nc'%(dt.year,daynum,dt.year,dt.month,dt.day)
+    name=pathsst+'%d/%d/%d%02d%02d000000-IFR-L3S_GHRSST-SSTfnd-ODYSSEA-ATL_002-v02.1-fv01.0.nc'%(dtsst.year,daynumsst,dtsst.year,dtsst.month,dtsst.day)
 
     f = netCDF4.Dataset(name)
     tlat=f.variables['lat'][:].data

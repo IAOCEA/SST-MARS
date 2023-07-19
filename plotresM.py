@@ -63,7 +63,6 @@ def main():
     else:
         import foscat.scat as sc
 
-
     log= np.load('out2dM_%s_log_%d.npy'%(outname,nside))
     plt.figure(figsize=(6,6))
     plt.plot(np.arange(log.shape[0])+1,log,color='black')
@@ -77,15 +76,29 @@ def main():
     sm = np.load('st2dM_%s_map_%d.npy'%(outname,nside))
     om = np.load('out2dM_%s_map_%d.npy'%(outname,nside))
 
-    start = sc.read('st2dM%d_%s_%d'%(0,outname,nside))
-    out   = sc.read('out2dM%d_%s_%d'%(0,outname,nside))
+    i1=im.shape[0]//2
+
+    start = sc.read('st2dM%d_%s_%d'%(i1,outname,nside))
+    out   = sc.read('out2dM%d_%s_%d'%(i1,outname,nside))
     start.plot(name='Input',color='orange')
     out.plot(name='Output',color='red',hold=False)
     
-    plt.figure(figsize=(10,10))
-    plt.imshow(im[1]-im[0])
+    plt.figure(figsize=(15,10))
+    plt.subplot(2,3,1)
+    plt.imshow((im[i1+1]-im[i1])/sm[0],vmin=-1.0,vmax=1.0,cmap='jet',origin='lower')
+    plt.subplot(2,3,2)
+    plt.imshow((om[i1+1]-om[i1])/sm[0],vmin=-1.0,vmax=1.0,cmap='jet',origin='lower')
+    plt.subplot(2,3,3)
+    plt.imshow((om[i1]-im[i1])/sm[0],vmin=-1.0,vmax=1.0,cmap='jet',origin='lower')
+    plt.subplot(2,3,4)
+    plt.imshow((im[i1+1])/sm[0],vmin=12.0,vmax=18.0,cmap='jet',origin='lower')
+    plt.subplot(2,3,5)
+    plt.imshow((om[i1+1])/sm[0],vmin=12.0,vmax=18.0,cmap='jet',origin='lower')
+    plt.subplot(2,3,6)
+    plt.imshow((sst[i1])/sm[0],vmin=12.0,vmax=18.0,cmap='jet',origin='lower')
     
-    
+    plt.show()
+    exit(0)
     plt.figure(figsize=(10,2.5*im.shape[0]))
     for k in range(im.shape[0]):
         

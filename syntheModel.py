@@ -166,6 +166,8 @@ def main():
     if rank==0:
         print('Work with n=%d'%(nside))
 
+    sys.stdout.flush()
+
     if cov:
         import foscat.scat_cov as sc
         if rank==0:
@@ -181,8 +183,9 @@ def main():
     #=================================================================================
     scratch_path = '../data'
 
-    n1=0
+    n1=1
     n2=8
+
     #=================================================================================
     # Get data
     #=================================================================================
@@ -197,8 +200,23 @@ def main():
                 pim.shape[2]//2-nside//2:pim.shape[2]//2+nside//2]
         tim=tim[:,tim.shape[1]//2-nside//2:tim.shape[1]//2+nside//2,
                 tim.shape[2]//2-nside//2:tim.shape[2]//2+nside//2]
+
+    i_tim={}
+    i_tim[0]=0
+    n_tim=0
+    for i in range(tim.shape[0]):
+        if np.sum(tim[i]-tim[i_tim[n_tim]])!=0:
+            i_tim[n_tim+1]=i
+            n_tim=n_tim+1
+    i_tim[n_tim+1]=tim.shape[0]
+    n_tim=n_tim+1
+
+    if rank==0:
+        print('SST STEP ',[i_tim[i] for i in range(n_tim+1)])
+        sys.stdout.flush()
+
     mask=np.expand_dims(pim>0,0)
-    masktim=np.expand_dims((tim>0)*(pim>0),0)
+    masktim=(tim>0)*(pim>0)
     pim[pim>0]=np.log(pim[pim>0])
     """
     plt.subplot(1,3,1)
@@ -264,7 +282,7 @@ def main():
         if k>0:
             loss=loss+scat_operator.reduce_sum(scat_operator.square(reft-learnt))
 
-        return(loss*3E-2)
+        return(loss)
 
     def lossT(x,scat_operator,args):
         
@@ -277,7 +295,15 @@ def main():
         for k in range(k1+1,k2):
             tmp=tmp+x[k].data[0,2:-2,2:-2]
         loss=scat_operator.backend.bk_reduce_sum(scat_operator.backend.bk_square(masktim*(tmp-tim)))
-    
+        """
+        tmp=x[k1]
+        for k in range(k1+1,k2):
+            tmp=tmp+x[k]
+
+        learn=scat_operator.eval(tmp,mask=masktim)
+        
+        loss=scat_operator.backend.bk_reduce_sum(scat_operator.backend.bk_square(ref.S1-learn.S1))
+        """
         return(loss)
 
     all_loss=[]
@@ -285,6 +311,7 @@ def main():
     for i in range(ntime):
         if i%size==rank:
             print('Create loss for time step ',i)
+            sys.stdout.flush()
             ref=scat_op.eval(im[i],mask=mask[:,i])
             refX=scat_op.eval(im[i],image2=pim[i],mask=mask[:,i])
             if i>0:
@@ -295,11 +322,15 @@ def main():
             loss1=synthe.Loss(lossX,scat_op,ref,refX,refT,im[i],pim[i],mask[:,i],mask[:,i]*mask[:,i-1],i)
             all_loss=all_loss+[loss1]
 
-    if rank==0:
-        loss2=synthe.Loss(lossT,scat_op,np.sum(tim,0),masktim[n1,0],n1,n2)
-        all_loss=all_loss+[loss2]
+    for i in range(n_tim):
+        if (i+ntime)%size==rank:
+            print('TIME STEP ',i_tim[i],i_tim[i+1])
+            sys.stdout.flush()
+            loss2=synthe.Loss(lossT,scat_op,np.sum(tim[i_tim[i]:i_tim[i+1]],0),masktim[i_tim[i]],i_tim[i],i_tim[i+1])
+            all_loss=all_loss+[loss2]
 
     print('rank=%d NbLoss=%d'%(rank,len(all_loss)))
+    sys.stdout.flush()
         
     sy = synthe.Synthesis(all_loss)
     
