@@ -1,0 +1,36 @@
+#!/bin/bash 
+#PBS -q gpu
+#PBS -l select=1:ncpus=8:ngpus=8:mem=256g
+#PBS -l walltime=3:00:00
+#PSB -n TESTSST-MARS
+
+
+source $HOME/.bashrc
+module load  impi/2019.9.304
+conda activate  /home/datawork-lops-iaocea/conda-env/FOSCAT_MPI
+
+#cd $DATAWORK/git/FOSCAT_DEMO
+#time mpirun -np  python demo.py -n=32 -k -c -s=100
+
+cd $DATAWORK/git/SST-MARS
+which mpirun
+which python
+
+echo without mpi
+time python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_nompi.log
+
+echo mpirun 2
+time mpirun -n 2 python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2.log
+
+echo mpirun 4
+time mpirun -n 4 python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_4.log
+
+echo mpirun 7
+time mpirun -n 7 python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_7.log
+
+echo mpirun 8
+time mpirun -n 8 python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_8.log
+
+
+
+
