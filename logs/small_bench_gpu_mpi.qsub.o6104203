@@ -1,0 +1,27 @@
+Warning: no access to tty (Inappropriate ioctl for device).
+Thus no job control in this shell.
+/appli/intel/parallel_studio/parallel_studio_xe_2020_update4/impi/2019.9.304/intel64/bin/mpirun
+/home/datawork-lops-iaocea/conda-env/FOSCAT_MPI/bin/python
+without mpi
+
+real	17m48.270s
+user	18m17.530s
+sys	4m45.584s
+mpirun 2
+
+real	9m37.826s
+user	19m22.522s
+sys	4m4.471s
+mpirun 4
+
+real	6m38.157s
+user	25m58.684s
+sys	4m14.561s
+mpirun 7
+
+real	5m7.917s
+user	31m11.206s
+sys	2m13.214s
+mpirun 8
+=>> PBS: job killed: walltime 10841 exceeded limit 10800
+Terminated
