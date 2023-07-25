@@ -1,0 +1,88 @@
+#!/bin/bash 
+#PBS -q gpu
+#PBS -l select=1:ncpus=8:ngpus=8:mem=256g:host=compute-101-9
+#PBS -l walltime=8:00:00
+#PSB -n TESTSST-MARS
+
+
+source $HOME/.bashrc
+conda activate  /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu
+
+#cd $DATAWORK/git/FOSCAT_DEMO
+#time mpirun -np  python demo.py -n=32 -k -c -s=100
+
+cd $DATAWORK/git/SST-MARS
+which mpiexec
+which python
+
+#echo without mpi
+#time python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_nompi.log
+# Whats happening on compute node with this script
+#
+#todaka   2779511 2779371  0 00:23 ?        00:00:00 /bin/bash /var/spool/pbs/mom_priv/jobs/6141616.datarmor0.SC
+#todaka   2781978 2779511  3 00:25 ?        00:00:00 /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec --host compute-101-15:1,compute-101-9:1 -n 2 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0 python syntheModel.py -n=256 -k -c -s=300
+#todaka   2781991 2781978  0 00:25 ?        00:00:00 /bin/ssh -x compute-101-15           set path = ( /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin $path ) ; if ( $?LD_LIBRARY_PATH == 1 ) set OMPI_have_llp ; if ( $?LD_LIBRARY_PATH == 0 ) setenv LD_LIBRARY_PATH /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/lib ; if ( $?OMPI_have_llp == 1 ) setenv LD_LIBRARY_PATH /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/lib:$LD_LIBRARY_PATH ; if ( $?DYLD_LIBRARY_PATH == 1 ) set OMPI_have_dllp ; if ( $?DYLD_LIBRARY_PATH == 0 ) setenv DYLD_LIBRARY_PATH /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/lib ; if ( $?OMPI_have_dllp == 1 ) setenv DYLD_LIBRARY_PATH /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/lib:$DYLD_LIBRARY_PATH ;   /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/orted -mca ess "env" -mca ess_base_jobid "2999975936" -mca ess_base_vpid 1 -mca ess_base_num_procs "2" -mca orte_node_regex "compute-[3:101]-9,compute-[3:101]-15@0(2)" -mca orte_hnp_uri "2999975936.0;tcp://10.32.101.9,134.246.184.21,10.49.101.9,10.64.101.9,172.17.0.1:33643" -mca btl_tcp_if_exclude "lo,docker0" -mca plm "rsh" --tree-spawn -mca routed "radix" -mca orte_parent_uri "2999975936.0;tcp://10.32.101.9,134.246.184.21,10.49.101.9,10.64.101.9,172.17.0.1:33643" -mca hwloc_base_binding_policy "none" -mca rmaps_base_mapping_policy "slot" -mca pmix "^s1,s2,cray,isolated"
+#todaka   2782012 2781978 99 00:25 ?        00:00:01 python syntheModel.py -n=256 -k -c -s=300
+
+echo 'mpirun 2 nodes without  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec --host compute-101-15:1,compute-101-9:1 -n 2 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_withoutopal_2.log
+
+echo 'mpirun 2 with  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec  --mca opal_cuda_support 1 --host compute-101-15:1,compute-101-9:1 -n 2 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_2.log
+
+echo 'mpirun 2 nodes 2 process each without  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec --host compute-101-15:2,compute-101-9:2 -n 4 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_withoutopal_2_4.log
+
+echo 'mpirun 2 with 2 process each  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec  --mca opal_cuda_support 1 --host compute-101-15:2,compute-101-9:2 -n 4 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_2_4.log
+
+echo 'mpirun 2 nodes 4 process each without  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec --host compute-101-15:4,compute-101-9:4 -n 8 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_withoutopal_2_8.log
+
+echo 'mpirun 2 with 4 process each  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec  --mca opal_cuda_support 1 --host compute-101-15:4,compute-101-9:4 -n 8 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_2_8.log
+
+echo 'mpirun 2 nodes 7 process each without  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec --host compute-101-15:7,compute-101-9:7 -n 14 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_withoutopal_2_14.log
+
+echo 'mpirun 2 with 4 process each  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec  --mca opal_cuda_support 1 --host compute-101-15:7,compute-101-9:7 -n 14 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_2_14.log
+
+echo 'mpirun 2 nodes 8 process each without  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec --host compute-101-15:8,compute-101-9:8 -n 16 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_withoutopal_2_16.log
+
+echo 'mpirun 2 with 4 process each  opal_cuda_support 1'
+#option  --mca opal_cuda_support 1 --mca pml ucx --mca osc ucx 
+# makes it crash.
+#testing without  --mca opal_cuda_support 1
+time /home/datawork-lops-iaocea/conda-env/tf_2.11_gpu/bin/mpiexec  --mca opal_cuda_support 1 --host compute-101-15:8,compute-101-9:8 -n 16 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x PATH   -x NCCL_SOCKET_IFNAME=^lo,docker0 -mca btl_tcp_if_exclude lo,docker0  python syntheModel.py -n=256 -k -c -s=300 >& logs/gpu_mpi_2_2_16.log
+
+
+
